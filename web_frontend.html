@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenManus 前端界面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-section label {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .input-section textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            resize: vertical;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-section {
+            margin-bottom: 30px;
+        }
+
+        #runBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        #runBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        #runBtn:active {
+            transform: translateY(0);
+        }
+
+        #runBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .logs-section {
+            margin-bottom: 30px;
+        }
+
+        .logs-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        #logContainer {
+            width: 100%;
+            height: 300px;
+            padding: 20px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .report-section .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .report-section h2 {
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        #downloadBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        #downloadBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #downloadBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #reportContainer {
+            width: 100%;
+            min-height: 300px;
+            padding: 20px;
+            background: #fafafa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        #reportContainer h1,
+        #reportContainer h2,
+        #reportContainer h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        #reportContainer pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        #reportContainer code {
+            font-family: 'Courier New', Courier, monospace;
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .status-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border: 2px solid #c8e6c9;
+            border-radius: 10px;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .status-section.error {
+            background: #ffebee;
+            border-color: #ffcdd2;
+            color: #c62828;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .input-section textarea {
+                height: 120px;
+            }
+
+            #logContainer {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>OpenManus 前端界面</h1>
+            <p>输入您的分析需求，查看实时日志和生成的报告</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <label for="promptInput">输入分析需求:</label>
+                <textarea id="promptInput" placeholder="请输入您的分析需求..."></textarea>
+            </div>
+
+            <div class="button-section">
+                <button id="runBtn">运行分析</button>
+            </div>
+
+            <div class="logs-section">
+                <h2>运行日志:</h2>
+                <div id="logContainer"></div>
+            </div>
+
+            <div class="report-section">
+                <div class="report-header">
+                    <h2>分析报告:</h2>
+                    <button id="downloadBtn" disabled>下载报告</button>
+                </div>
+                <div id="reportContainer"></div>
+            </div>
+
+            <div class="status-section" id="statusSection">
+                状态: 就绪
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const promptInput = document.getElementById('promptInput');
+        const runBtn = document.getElementById('runBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const logContainer = document.getElementById('logContainer');
+        const reportContainer = document.getElementById('reportContainer');
+        const statusSection = document.getElementById('statusSection');
+
+        let ws;
+        let latestReportContent = '';
+
+        function clearContent() {
+            logContainer.textContent = '';
+            reportContainer.textContent = '';
+            statusSection.textContent = '状态: 就绪';
+            latestReportContent = '';
+            downloadBtn.disabled = true;
+        }
+
+        function downloadReport() {
+            if (!latestReportContent) {
+                alert('没有可下载的报告');
+                return;
+            }
+
+            // 创建下载链接
+            const blob = new Blob([latestReportContent], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `openmanus_report_${new Date().toISOString().slice(0, 10)}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function connectWebSocket() {
+            ws = new EventSource('http://localhost:8000/streaming_log');
+
+            ws.onopen = () => {
+                console.log('EventSource 连接已建立');
+            };
+
+            ws.onmessage = (event) => {
+                logContainer.textContent += event.data;
+                logContainer.scrollTop = logContainer.scrollHeight;
+            };
+
+            ws.onclose = () => {
+                console.log('EventSource 连接已关闭');
+                // 自动重连
+                setTimeout(connectWebSocket, 1000);
+            };
+
+            ws.onerror = (error) => {
+                console.error('EventSource 错误:', error);
+            };
+        }
+
+        async function runAnalysis() {
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                alert('请输入分析需求');
+                return;
+            }
+
+            // 清空之前的内容
+            clearContent();
+
+            runBtn.disabled = true;
+            runBtn.textContent = '分析中...';
+            statusSection.textContent = '状态: 分析中';
+            statusSection.classList.remove('error');
+
+            try {
+                const response = await fetch('http://localhost:8000/run', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                statusSection.textContent = '状态: 分析完成';
+
+                // 获取最新报告
+                await getLatestReport();
+            } catch (error) {
+                statusSection.textContent = `状态: 错误 - ${error.message}`;
+                statusSection.classList.add('error');
+                console.error('Error:', error);
+            } finally {
+                runBtn.disabled = false;
+                runBtn.textContent = '运行分析';
+            }
+        }
+
+        async function getLatestReport() {
+            try {
+                const response = await fetch('http://localhost:8000/get-latest-report');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.content) {
+                    latestReportContent = data.content;
+                    // 渲染 MD 内容
+                    reportContainer.innerHTML = marked.parse(data.content);
+                    downloadBtn.disabled = false;
+                } else {
+                    reportContainer.textContent = '获取报告失败';
+                    downloadBtn.disabled = true;
+                }
+            } catch (error) {
+                reportContainer.textContent = `获取报告错误: ${error.message}`;
+                downloadBtn.disabled = true;
+            }
+        }
+
+        runBtn.addEventListener('click', runAnalysis);
+        downloadBtn.addEventListener('click', downloadReport);
+
+        // 页面加载时建立 WebSocket 连接
+        window.onload = () => {
+            connectWebSocket();
+        };
+    </script>
+
+    <!-- 引入 marked.js 用于 MD 渲染 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+
+</html>

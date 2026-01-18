@@ -30,7 +30,6 @@ from app.schema import (
     ToolChoice,
 )
 
-
 REASONING_MODELS = ["o1", "o3-mini"]
 MULTIMODAL_MODELS = [
     "gpt-4-vision-preview",
@@ -223,6 +222,10 @@ class LLM:
                 self.client = BedrockClient()
             else:
                 self.client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
+            # self.client = AsyncOpenAI(
+            #     api_key="sk-f3HHUryVLknYUtRVmTSDVNKCzQ7vXRaD",  # 直接传递API密钥
+            #     base_url="http://bedroc-Proxy-BWmC21vZr3DZ-1454659475.us-west-2.elb.amazonaws.com/api/v1",  # 设置自定义基础URL
+            # )
 
             self.token_counter = TokenCounter(self.tokenizer)
 
@@ -537,9 +540,7 @@ class LLM:
             multimodal_content = (
                 [{"type": "text", "text": content}]
                 if isinstance(content, str)
-                else content
-                if isinstance(content, list)
-                else []
+                else content if isinstance(content, list) else []
             )
 
             # Add images to content
@@ -650,7 +651,7 @@ class LLM:
         tool_choice: TOOL_CHOICE_TYPE = ToolChoice.AUTO,  # type: ignore
         temperature: Optional[float] = None,
         **kwargs,
-    ) -> ChatCompletionMessage | None:
+    ) -> Optional[ChatCompletionMessage]:
         """
         Ask LLM using functions/tools and return the response.
 
@@ -729,6 +730,8 @@ class LLM:
                 )
 
             params["stream"] = False  # Always use non-streaming for tool requests
+            if self.model.startswith("arn:aws:bedrock"):
+                params["reasoning_effort"] = "medium"  # low, medium, high
             response: ChatCompletion = await self.client.chat.completions.create(
                 **params
             )
